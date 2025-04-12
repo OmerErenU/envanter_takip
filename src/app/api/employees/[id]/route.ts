@@ -1,14 +1,20 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 
+type Props = {
+  params: {
+    id: string;
+  };
+};
+
 export async function GET(
-  request: Request,
-  { params }: { params: { id: string } }
+  request: NextRequest,
+  props: Props
 ) {
   try {
     const employee = await prisma.employee.findUnique({
       where: {
-        id: parseInt(params.id)
+        id: parseInt(props.params.id)
       },
       include: {
         assignments: {
@@ -37,8 +43,8 @@ export async function GET(
 }
 
 export async function PUT(
-  request: Request,
-  { params }: { params: { id: string } }
+  request: NextRequest,
+  props: Props
 ) {
   try {
     const body = await request.json();
@@ -49,7 +55,7 @@ export async function PUT(
       where: {
         email,
         NOT: {
-          id: parseInt(params.id)
+          id: parseInt(props.params.id)
         }
       }
     });
@@ -63,7 +69,7 @@ export async function PUT(
 
     const updatedEmployee = await prisma.employee.update({
       where: {
-        id: parseInt(params.id)
+        id: parseInt(props.params.id)
       },
       data: {
         name,
