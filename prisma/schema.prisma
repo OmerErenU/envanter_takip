@@ -1,0 +1,72 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Employee {
+  id          Int           @id @default(autoincrement())
+  name        String
+  email       String        @unique
+  phone       String?
+  department  String
+  position    String?
+  notes       String?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  assignments Assignment[]
+}
+
+model Device {
+  id            Int           @id @default(autoincrement())
+  type          String        // laptop, phone, tablet, etc.
+  brand         String
+  model         String
+  serialNumber  String?       @unique
+  imei          String?       // Telefonlar için IMEI numarası
+  hostname      String?       // Bilgisayarlar için hostname
+  uuid          String?       // Bilgisayarlar için UUID
+  status        DeviceStatus  @default(AVAILABLE)
+  notes         String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  assignments   Assignment[]
+}
+
+model Assignment {
+  id           Int              @id @default(autoincrement())
+  employee     Employee         @relation(fields: [employeeId], references: [id])
+  employeeId   Int
+  device       Device           @relation(fields: [deviceId], references: [id])
+  deviceId     Int
+  assignedDate DateTime         @default(now())
+  returnDate   DateTime?
+  status       AssignmentStatus @default(ACTIVE)
+  notes        String?
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+}
+
+enum DeviceStatus {
+  AVAILABLE    // Müsait
+  ASSIGNED     // Zimmetli
+  MAINTENANCE  // Bakımda
+  REPAIR       // Tamirde
+  BROKEN       // Arızalı
+  RETIRED      // Kullanım Dışı
+}
+
+enum AssignmentStatus {
+  ACTIVE      // Aktif zimmet
+  INACTIVE    // İade edilmiş
+  PENDING     // Beklemede
+}
