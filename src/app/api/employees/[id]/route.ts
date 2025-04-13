@@ -1,13 +1,17 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 
-export async function GET(request: Request, { params }: { params: { id: string } }) {
-  const { id } = params;  // params içindeki id'yi doğru şekilde alıyoruz
+// GET metodu
+export async function GET(
+  request: Request,
+  context: { params: { id: string } } // params burada context nesnesinin içinde
+) {
+  const { id } = context.params;  // params.id doğru şekilde alıyoruz
 
   try {
     const employee = await prisma.employee.findUnique({
       where: {
-        id: parseInt(id),
+        id: parseInt(id),  // id'yi sayıya çeviriyoruz
       },
       include: {
         assignments: {
@@ -35,9 +39,13 @@ export async function GET(request: Request, { params }: { params: { id: string }
   }
 }
 
-export async function PUT(request: Request, { params }: { params: { id: string } }) {
-  const { id } = params;  // params içindeki id'yi doğru şekilde alıyoruz
-
+// PUT metodu
+export async function PUT(
+  request: Request,
+  context: { params: { id: string } } // params burada context nesnesinin içinde
+) {
+  const { id } = context.params;  // params.id doğru şekilde alıyoruz
+  
   try {
     const body = await request.json();
     const { name, email, phone, department, position, notes } = body;
@@ -47,7 +55,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       where: {
         email,
         NOT: {
-          id: parseInt(id),
+          id: parseInt(id),  // Aynı id'yi kontrol ediyoruz
         },
       },
     });
@@ -61,7 +69,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
 
     const updatedEmployee = await prisma.employee.update({
       where: {
-        id: parseInt(id),
+        id: parseInt(id), // id'yi sayıya çeviriyoruz
       },
       data: {
         name,
