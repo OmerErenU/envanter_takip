@@ -1,19 +1,12 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 
-interface RequestContext {
-  params: {
-    id: string;
-  };
-}
-
-// GET metodu
 export async function GET(
-  req: NextRequest,
-  context: RequestContext
+  request: Request,
+  { params }: { params: { id: string } }
 ) {
   try {
-    const id = parseInt(context.params.id);
+    const id = parseInt(params.id);
     
     const employee = await prisma.employee.findUnique({
       where: { id },
@@ -43,14 +36,13 @@ export async function GET(
   }
 }
 
-// PUT metodu
 export async function PUT(
-  req: NextRequest,
-  context: RequestContext
+  request: Request,
+  { params }: { params: { id: string } }
 ) {
   try {
-    const id = parseInt(context.params.id);
-    const body = await req.json();
+    const id = parseInt(params.id);
+    const body = await request.json();
     const { name, email, phone, department, position, notes } = body;
 
     // Email benzersizliğini kontrol et
