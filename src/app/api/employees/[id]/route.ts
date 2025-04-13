@@ -1,26 +1,30 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
+
+interface RequestContext {
+  params: {
+    id: string;
+  };
+}
 
 // GET metodu
 export async function GET(
-  request: Request,
-  context: { params: { id: string } } // params burada context nesnesinin içinde
+  req: NextRequest,
+  context: RequestContext
 ) {
-  const { id } = context.params;  // params.id doğru şekilde alıyoruz
-
   try {
+    const id = parseInt(context.params.id);
+    
     const employee = await prisma.employee.findUnique({
-      where: {
-        id: parseInt(id),  // id'yi sayıya çeviriyoruz
-      },
+      where: { id },
       include: {
         assignments: {
           where: { status: 'ACTIVE' },
           include: {
-            device: true,
-          },
-        },
-      },
+            device: true
+          }
+        }
+      }
     });
 
     if (!employee) {
@@ -41,23 +45,20 @@ export async function GET(
 
 // PUT metodu
 export async function PUT(
-  request: Request,
-  context: { params: { id: string } } // params burada context nesnesinin içinde
+  req: NextRequest,
+  context: RequestContext
 ) {
-  const { id } = context.params;  // params.id doğru şekilde alıyoruz
-  
   try {
-    const body = await request.json();
+    const id = parseInt(context.params.id);
+    const body = await req.json();
     const { name, email, phone, department, position, notes } = body;
 
     // Email benzersizliğini kontrol et
     const existingEmployee = await prisma.employee.findFirst({
       where: {
         email,
-        NOT: {
-          id: parseInt(id),  // Aynı id'yi kontrol ediyoruz
-        },
-      },
+        NOT: { id }
+      }
     });
 
     if (existingEmployee) {
@@ -68,17 +69,15 @@ export async function PUT(
     }
 
     const updatedEmployee = await prisma.employee.update({
-      where: {
-        id: parseInt(id), // id'yi sayıya çeviriyoruz
-      },
+      where: { id },
       data: {
         name,
         email,
         phone,
         department,
         position,
-        notes,
-      },
+        notes
+      }
     });
 
     return NextResponse.json(updatedEmployee);
