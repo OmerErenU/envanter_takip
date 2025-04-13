@@ -7,12 +7,9 @@ const prismaClientSingleton = () => {
       db: {
         url: process.env.DATABASE_URL
       }
-    },
-    // Connection pooling sorunları için
-    // Bağlantı sürelerini artır
-    connectionTimeout: 60_000, // 60 saniye
-    // Transaction timeout
-    transactionTimeout: 60_000, // 60 saniye
+    }
+    // Connection pooling sorunları için özel seçenekler kaldırıldı
+    // connectionTimeout ve transactionTimeout Prisma tarafından desteklenmiyor
   });
 };
 
