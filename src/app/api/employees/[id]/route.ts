@@ -3,12 +3,14 @@ import { prisma } from '@/lib/db';
 
 export async function GET(
   request: Request,
-  context: { params: { id: string } }
+  { params }: { params: { id: string } }
 ) {
+  const id = params.id;
+
   try {
     const employee = await prisma.employee.findUnique({
       where: {
-        id: parseInt(context.params.id)
+        id: parseInt(id)
       },
       include: {
         assignments: {
@@ -38,8 +40,10 @@ export async function GET(
 
 export async function PUT(
   request: Request,
-  context: { params: { id: string } }
+  { params }: { params: { id: string } }
 ) {
+  const id = params.id;
+  
   try {
     const body = await request.json();
     const { name, email, phone, department, position, notes } = body;
@@ -49,7 +53,7 @@ export async function PUT(
       where: {
         email,
         NOT: {
-          id: parseInt(context.params.id)
+          id: parseInt(id)
         }
       }
     });
@@ -63,7 +67,7 @@ export async function PUT(
 
     const updatedEmployee = await prisma.employee.update({
       where: {
-        id: parseInt(context.params.id)
+        id: parseInt(id)
       },
       data: {
         name,
