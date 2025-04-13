@@ -1,25 +1,22 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 
-export async function GET(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
-  const id = params.id;
+export async function GET(request: Request, { params }: { params: { id: string } }) {
+  const { id } = params;  // params içindeki id'yi doğru şekilde alıyoruz
 
   try {
     const employee = await prisma.employee.findUnique({
       where: {
-        id: parseInt(id)
+        id: parseInt(id),
       },
       include: {
         assignments: {
           where: { status: 'ACTIVE' },
           include: {
-            device: true
-          }
-        }
-      }
+            device: true,
+          },
+        },
+      },
     });
 
     if (!employee) {
@@ -38,12 +35,9 @@ export async function GET(
   }
 }
 
-export async function PUT(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
-  const id = params.id;
-  
+export async function PUT(request: Request, { params }: { params: { id: string } }) {
+  const { id } = params;  // params içindeki id'yi doğru şekilde alıyoruz
+
   try {
     const body = await request.json();
     const { name, email, phone, department, position, notes } = body;
@@ -53,9 +47,9 @@ export async function PUT(
       where: {
         email,
         NOT: {
-          id: parseInt(id)
-        }
-      }
+          id: parseInt(id),
+        },
+      },
     });
 
     if (existingEmployee) {
@@ -67,7 +61,7 @@ export async function PUT(
 
     const updatedEmployee = await prisma.employee.update({
       where: {
-        id: parseInt(id)
+        id: parseInt(id),
       },
       data: {
         name,
@@ -75,8 +69,8 @@ export async function PUT(
         phone,
         department,
         position,
-        notes
-      }
+        notes,
+      },
     });
 
     return NextResponse.json(updatedEmployee);
@@ -86,4 +80,4 @@ export async function PUT(
       { status: 500 }
     );
   }
-} 
+}
