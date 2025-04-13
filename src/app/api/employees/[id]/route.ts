@@ -1,15 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 
-interface RouteParams {
-  params: {
-    id: string;
-  };
-}
-
 export async function GET(
-  request: NextRequest,
-  context: RouteParams
+  request: Request,
+  context: { params: { id: string } }
 ) {
   try {
     const employee = await prisma.employee.findUnique({
@@ -43,8 +37,8 @@ export async function GET(
 }
 
 export async function PUT(
-  request: NextRequest,
-  context: RouteParams
+  request: Request,
+  context: { params: { id: string } }
 ) {
   try {
     const body = await request.json();
