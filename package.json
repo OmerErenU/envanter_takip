@@ -9,9 +9,10 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@prisma/client": "^6.5.0",
+    "@prisma/client": "^6.6.0",
+    "@supabase/supabase-js": "^2.39.7",
     "next": "15.2.4",
-    "prisma": "^6.5.0",
+    "prisma": "^6.6.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "xlsx": "^0.18.5"
